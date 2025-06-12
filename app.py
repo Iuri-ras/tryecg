@@ -111,7 +111,7 @@ if df is not None:
         unsafe_allow_html=True,
     )
 
-    # Download filtered data
+    # Download filtered data    
     filtered_df = pd.DataFrame({"Time": time, "Filtered ECG Signal": filtered_signal})
     csv_data = filtered_df.to_csv(index=False).encode("utf-8")
 
