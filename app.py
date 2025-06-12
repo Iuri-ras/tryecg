@@ -11,13 +11,10 @@ def bandpass_filter(data, lowcut, highcut, fs, order=4):
     b, a = butter(order, [low, high], btype='band')
     return filtfilt(b, a, data)
 
-# Sampling frequency (assuming 100 Hz, typical for ECG data)
-fs = 100.0
+# Streamlit app title
+st.title("ECG Signal Filtering and Analysis")
 
-# Streamlit app
-st.title("ECG Signal Filtering")
-
-# Upload file
+# File uploader for ECG CSV
 uploaded_file = st.file_uploader("Upload ECG CSV", type=["csv"])
 
 if uploaded_file is not None:
@@ -31,6 +28,9 @@ if uploaded_file is not None:
         # Extract the first column as the ECG signal
         ecg_signal = ecg_data.iloc[:, 0]
 
+        # Sampling frequency (assuming 100 Hz, typical for ECG data)
+        fs = 100.0
+
         # Set the cutoff frequencies for the bandpass filter
         lowcut = 0.5
         highcut = 40.0
@@ -38,24 +38,34 @@ if uploaded_file is not None:
         # Apply the bandpass filter
         filtered_ecg = bandpass_filter(ecg_signal, lowcut, highcut, fs)
 
-        # Plot the original ECG signal separately
+        # Plot the original ECG signal
         fig1, ax1 = plt.subplots(figsize=(12, 6))
-        ax1.plot(ecg_signal)
+        ax1.plot(ecg_signal, color='blue')
         ax1.set_title('Original ECG Signal')
         ax1.set_xlabel('Time (samples)')
         ax1.set_ylabel('Amplitude')
-        
-        # Display the original ECG signal plot
         st.pyplot(fig1)
 
-        # Plot the filtered ECG signal separately
+        # Plot the filtered ECG signal
         fig2, ax2 = plt.subplots(figsize=(12, 6))
-        ax2.plot(filtered_ecg)
+        ax2.plot(filtered_ecg, color='green')
         ax2.set_title('Filtered ECG Signal (0.5–40 Hz Bandpass)')
         ax2.set_xlabel('Time (samples)')
         ax2.set_ylabel('Amplitude')
-
-        # Display the filtered ECG signal plot
         st.pyplot(fig2)
+
+        # Comment on the QRS Visibility Change
+        st.markdown("""
+        **QRS Visibility Improvement:**
+        After applying the bandpass filter, you will notice that the baseline wander (low-frequency drift) and powerline noise (high-frequency noise) are removed.
+        
+        The original ECG signal may have low-frequency drifts or high-frequency noise, which can make the QRS complex less visible. After filtering:
+        
+        - **Baseline Wander Removal**: The filter removes slow fluctuations (baseline wander), which makes the QRS complex clearer and easier to detect.
+        - **Noise Reduction**: The high-frequency noise (such as powerline interference) is also removed, allowing for a more accurate representation of the heart's electrical activity.
+        
+        As a result, the **QRS complex** will be more pronounced, improving visibility and making it easier to analyze for heart rate estimation or other purposes.
+        """)
+
 else:
     st.info("Please upload an ECG CSV file to proceed.")
