@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import butter, filtfilt
 
@@ -21,20 +20,14 @@ st.title("ECG Signal Filtering")
 # Sidebar options
 st.sidebar.title("Input Options")
 
+# Upload file
 uploaded_file = st.sidebar.file_uploader("Upload ECG CSV", type=["csv"])
-load_sample = st.sidebar.button("Load Sample Data")
 
 # Initialize the dataframe for holding the ECG data
 df = None
 
-# Load sample data if the button is pressed
-if load_sample:
-    # Generate a sample ECG-like signal (sine wave with noise)
-    time = np.linspace(0, 10, 1000)
-    ecg_signal = np.sin(2 * np.pi * 1 * time) + 0.5 * np.random.randn(1000)
-    df = pd.DataFrame({"Time": time, "ECG Signal": ecg_signal})
-    st.success("Sample ECG data loaded!")
-elif uploaded_file is not None:
+# Check if a file is uploaded
+if uploaded_file is not None:
     try:
         # Read the uploaded CSV
         df = pd.read_csv(uploaded_file)
@@ -47,11 +40,11 @@ elif uploaded_file is not None:
     except Exception as e:
         st.error(f"Error loading file: {e}")
 else:
-    st.info("Upload an ECG CSV file or load sample data to begin.")
+    st.info("Upload an ECG CSV file to proceed.")
 
-# Process data if available
+# Process and filter the ECG signal if available
 if df is not None:
-    # Ensure the column names are correctly identified
+    # Ensure the column names are correctly identified (time and signal)
     time = df.iloc[:, 0]
     ecg_signal = df.iloc[:, 1]
 
@@ -75,5 +68,3 @@ if df is not None:
     ax2.set_xlabel('Time (s)')
     ax2.set_ylabel('Amplitude')
     st.pyplot(fig2)
-else:
-    st.info("Please upload an ECG CSV file or load sample data to proceed.")
