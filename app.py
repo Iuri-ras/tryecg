@@ -36,8 +36,14 @@ if load_sample:
     st.success("Sample ECG data loaded!")
 elif uploaded_file is not None:
     try:
+        # Read the uploaded CSV
         df = pd.read_csv(uploaded_file)
-        st.success(f"Uploaded file: {uploaded_file.name}")
+        
+        # Ensure the file has two columns (time and ECG signal)
+        if df.shape[1] < 2:
+            st.error("The uploaded file doesn't contain the expected columns.")
+        else:
+            st.success(f"Uploaded file: {uploaded_file.name}")
     except Exception as e:
         st.error(f"Error loading file: {e}")
 else:
@@ -45,6 +51,7 @@ else:
 
 # Process data if available
 if df is not None:
+    # Ensure the column names are correctly identified
     time = df.iloc[:, 0]
     ecg_signal = df.iloc[:, 1]
 
