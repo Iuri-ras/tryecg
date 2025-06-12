@@ -21,33 +21,39 @@ st.title("ECG Signal Filtering")
 uploaded_file = st.file_uploader("Upload ECG CSV", type=["csv"])
 
 if uploaded_file is not None:
-    # Load ECG data
+    # Load ECG data from the uploaded file
     ecg_data = pd.read_csv(uploaded_file)
 
-    # Extract the first column as the ECG signal
-    ecg_signal = ecg_data.iloc[:, 0]
+    # Check if the file has the expected format and columns
+    if ecg_data.shape[1] < 1:
+        st.error("The uploaded file doesn't contain any data.")
+    else:
+        # Extract the first column as the ECG signal
+        ecg_signal = ecg_data.iloc[:, 0]
 
-    # Set the cutoff frequencies for the bandpass filter
-    lowcut = 0.5
-    highcut = 40.0
+        # Set the cutoff frequencies for the bandpass filter
+        lowcut = 0.5
+        highcut = 40.0
 
-    # Apply the bandpass filter
-    filtered_ecg = bandpass_filter(ecg_signal, lowcut, highcut, fs)
+        # Apply the bandpass filter
+        filtered_ecg = bandpass_filter(ecg_signal, lowcut, highcut, fs)
 
-    # Plot the original and filtered signals
-    fig, axes = plt.subplots(2, 1, figsize=(12, 6))
+        # Plot the original and filtered signals
+        fig, axes = plt.subplots(2, 1, figsize=(12, 6))
 
-    # Original ECG signal
-    axes[0].plot(ecg_signal)
-    axes[0].set_title('Original ECG Signal')
-    axes[0].set_xlabel('Time (samples)')
-    axes[0].set_ylabel('Amplitude')
+        # Original ECG signal
+        axes[0].plot(ecg_signal)
+        axes[0].set_title('Original ECG Signal')
+        axes[0].set_xlabel('Time (samples)')
+        axes[0].set_ylabel('Amplitude')
 
-    # Filtered ECG signal
-    axes[1].plot(filtered_ecg)
-    axes[1].set_title('Filtered ECG Signal (0.5–40 Hz Bandpass)')
-    axes[1].set_xlabel('Time (samples)')
-    axes[1].set_ylabel('Amplitude')
+        # Filtered ECG signal
+        axes[1].plot(filtered_ecg)
+        axes[1].set_title('Filtered ECG Signal (0.5–40 Hz Bandpass)')
+        axes[1].set_xlabel('Time (samples)')
+        axes[1].set_ylabel('Amplitude')
 
-    # Display the plots
-    st.pyplot(fig)
+        # Display the plots
+        st.pyplot(fig)
+else:
+    st.info("Please upload an ECG CSV file to proceed.")
